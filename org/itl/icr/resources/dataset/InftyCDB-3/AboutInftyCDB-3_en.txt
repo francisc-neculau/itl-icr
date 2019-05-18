@@ -1,0 +1,172 @@
+*************************
+ Synopsis of Infty-CDB-3
+*************************
+
+* There are three files included as part of the Infty-CDB-3 database,
+  besides this one:
+  InftyCDB-3
+    |____InftyCDB-3-A.csv
+        |____image
+    |____InftyCDB-3-B.csv
+        |____image
+    |____OcrCodeList.txt
+
+* The following data is recorded in InftyCDB-3-A.csv and InftyCDB-3-B.csb.
+  Fields 1-7 are separated by commas.
+
+--------------------------------------------------------------------------
+
+1. ID number of source article
+2. 2-byte symbol code (written in hexadecimal, using 4 bytes)
+3. sheet id ( = file name of the png file in image folder)
+4. cx = left coodinage of the bounding box of the character image
+5. cx = top coodinage of the bounding box of the character image
+6. Character height of the character image
+7. Character width of the character image
+
+--------------------------------------------------------------------------
+
+Contents of InftyCDB-3-A.txt and InftyCDB-3-B.txt:
+
+  * InftyCDB-3-A.txt (188,752 symbols):
+
+    This database consists of images of symbols in various fonts,
+    and was used to train the character recognition engine in
+    recent versions of InftyReader (Ver 2.0-2.5).
+    Each symbol has been scanned at 400 dpi.  Depending on when it was
+    selected, a symbol may have been scanned into a gray image and then 
+    converted into binary images using different thresholds to produce 
+    character images of different density from one original sample, 
+    while some others are scaned directly into binary image from scaner 
+    using medium threshold.
+
+    Images of the symbols come from the following three groups:
+
+    (1) The following publications, from various publishers:
+
+  ------------------------------------------------------------------------
+   1. Journal of Approximation Theory (Academic Press)
+   2. Journal of Differential Equations (Academic Press)
+   3. Journal of Functional Analysis (Academic Press)
+   4. Introduction to Algebraic Curves (American Mathematical Society)
+   5. 30 Lectures in Mathematics Series: 30 Lectures on Complex Numbers
+      (Japanese, Asakura Shoten)
+   6. Complexity Theory of Real Functions (Birkhauser)
+   7. Journal of Fluid Mechanics (Cambridge University Press)
+   8. Image Processing: Mathematical Methods and Applications (Clarendon Press)
+   9. Automorphisms of Affine Spaces (Kluwer Academic Publishers)
+  10. Typesetting samples (Kotobuki Printing Co.)
+  11. Hyperbolic Manifolds and Holomorphic Mappings (Marcel Dekker, Inc.)
+  12. Complex Analysis (Springer-Verlag)
+  13. Introduction to Complex Hyperbolic Spaces (Springer-Verlag)
+  14. Knot Theory (Japanese, Springer-Verlag)
+  15. Rational Points on Elliptic Curves  (Springer)
+  16. Communications on Pure and Applied Mathematics (John Wiley & Sons)
+  17. Explanation of Braille Codes for Mathematics
+      (Japanese, Japanese Braille Association)
+  18. Value Distribution Theory (D. Van Nostrand Co.)
+  19. An Introduction to Differentials and Integrals (Yuuseisha)
+
+  ------------------------------------------------------------------------
+
+    (2) Fonts used internally on Windows and Macintosh computers,
+        and LaTeX fonts.  These are entered into the database
+        by means of scanned printouts.
+
+    (3) Infrequently appearing symbols and fonts are individually
+        sought out from mathematics articles in the Kyushu University
+        Library.  To our regret, in these cases there is no record
+        of the document source.  However, any two symbols that came
+        from the same book are always assigned the same article ID number.
+
+
+  * InftyCDB-3-B.txt (70,637 symbols):
+
+    From 20 mathematics articles (a subset of those used in Infty-CDB-1),
+    all of the symbols are extracted at 600 dpi.
+    Initially, samples of every symbol code that differ in size are
+    taken.  After feature vectors have been computed, clustering is
+    used to reduce the redundancy of the samples.  The samples that are
+    selected through clustering are entered into InftyCDB-3-B.
+
+    To make the database convenient for the development and testing
+    of OCR engines, symbols that look identical in print have been
+    assigned the same symbol code.  When InftyCDB-1 was released,
+    the summation symbol $\sum$ (for example) was distinguished from
+    the Greek letter $\Sigma$; this time, they are treated as identical.
+    However, lower and upper case alphabet letters are always given
+    different codes, even if they look nearly identical out of context
+    (Cc, Oo, Pp, Ss, Vv, Ww, Xx, etc.).
+
+    Furthemore, symbols that look different but are not distinguished
+    in mathematical usage ($\epsilon$ and $\varepsilon$, slanted
+    and italic, etc.) are assigned the same code.
+
+    Here is a detailed list of characters that are assigned the same code:
+
+  ------------------------------------------------------------------------
+
+    * Fractional line, underbar, overbar, minus, overline, underline,
+      lowline, hyphen, longHyphen
+
+    * Single end quotation (') and comma (,)
+
+    * Tilde (\tilde) and similarity (\sim)
+
+    * Vector symbol (\vec) and right arrow (\rightarrow)
+
+    * The following pairs of TeX entities:
+
+        \sum and \Sigma
+        \prod and \Pi
+        \bigcup and \cup
+        \bigcap and \cap
+        \bigvee and \vee
+        \bigwedge and \wedge
+        \bigoplus and \oplus
+        \bigotimes and \otimes
+        \varepsilon and \epsilon
+        \vartheta and \theta
+        \varrho and \rho
+        \varsigma and \sigma
+
+  ------------------------------------------------------------------------
+
+  * OcrCodeList.txt
+
+    This is the same list that was included with Infty-CDB-1.
+    Each symbol code is two bytes; the first represents the
+    category (representing the type of symbol, or the style
+    of font), and the second represents a character within that category.
+    The file lists all symbol codes in order, along with the corresponding
+    category names and LaTeX names.
+
+  * Conditions of use
+
+    This database may be used free of charge in the research,
+    development, and testing of OCR systems for scientific documents.
+    Please refrain from other forms of use.
+
+    You are permitted to use the database for commercial OCR engines.
+    However, if you do use it for such a purpose, you must contact
+    the Creator, whose contact information appears below.
+
+    You may not sell this database, or any part of it.
+    If you incorporate it into a new distribution, please include
+    the database in its entirety, without transformation or
+    modification.
+
+    We hope this database will contribute to your development or
+    research.  If it does, please include the InftyProject URL
+    (http://www.inftyproject.org) with your publication or release.
+
+Best wishes,
+
+Masakazu Suzuki
+Professor emeritus of Kyushu University
+NPO Science Accessibility Net
+
+msuzuki@kyudai.jp
+http://www.inftyproject.org/suzuki/
+http://www.sciaccess.net/
+

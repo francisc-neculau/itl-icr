@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+option java_package = "org.itl.service.external";
+
+message SegmentationResult {
+
+    repeated CharImage charImages = 1;
+
+    message CharImage {
+        required string identifier = 1;
+        required string charTypeName = 2;
+        required int32 height = 3;
+        required int32 width = 4;
+        required Point centerOfMass = 5;
+        required BoundingRectangle boundingRectangle = 6;
+
+        message Point {
+            required int32 x = 1;
+            required int32 y = 2;
+        }
+        message BoundingRectangle {
+            required Point topLeft = 1;
+            required Point bottomRight = 2;
+        }
+    }
+}
+
+
