@@ -1,6 +1,6 @@
 from builtins import staticmethod
 from org.itl.icr.isr.ai.nn.cnn2 import CnnModel
-from org.itl.icr.isr.ai.dataset.InftyCDB3B import char_type_registry, CharType
+from org.itl.icr.isr.ai.dataset.infty_cdb3 import char_type_registry, CharType
 from PIL import Image as PillowImage
 import cv2 as cv
 import numpy as np
@@ -20,9 +20,9 @@ class ImageSymbolClassifier:
 
                          +----------+
                          |          |
-        (y_min, x_min) <-+----------+
+        (y_min, x_min) <-A----------+
 
-                              +----------+ -> (y_max, x_max)
+                              +----------B-> (y_max, x_max)
                               |          |
                               +----------+
         :return: True/False
@@ -75,9 +75,15 @@ class ImageSymbolClassifier:
                     minus_char_images[i], minus_char_images[j], y_axis_to_char_images
                 ):
                     continue
-                # bounding boxes align
+                # FIXME: Check that bounding boxes align ?
+                # Two equal signs should have bounding boxes
+                # that align on their x Axis.
 
-                # FIXME: Maybe a double check with the NN ??
+                # FIXME: Maybe a double check with the AT ?
+                # Here we are assuming that we found a minus but
+                # maybe it would be best to double check with
+                # the AI-Recognizer and 'rollback' in case of
+                # contradiction.
                 equals_char_image = minus_char_images[i].merge_in(minus_char_images[j], image)
                 equals_char_image.char_type = char_type_registry.find_by_external_name(CharType.EXTERNAL_NAME_equals)
                 equal_char_images.append(equals_char_image)
@@ -133,15 +139,17 @@ class ImageSymbolClassifier:
             mass_x_y = dot_char_image.center.mass_x_y
             bottom_right_point = dot_char_image.bounding_rectangle.bottom_right_point
 
-            # FIXME: Use constants ?
+            # FIXME: Are these good number ? Use constants ?
+            # These values I have decided for have no
+            # formal background. Are the result of
+            # trial and error.
             x_min = int(mass_x_y[0] - 0.1 * mass_x_y[0])
             x_max = int(mass_x_y[0] + 0.1 * mass_x_y[0])
             y_min = bottom_right_point[1] + 1
-            y_max = y_min + dot_char_image.height * 3  # FIXME: This is a good number ?
+            y_max = y_min + dot_char_image.height * 3
 
-            # We need only to find the first withing the above boundaries
-            # if such a char_image exists
-            # FIXME: Maybe a function ??
+            # We need only to find the first withing
+            # the above boundaries if such a char_image exists
             match = None
             for y in range(y_min, y_max):
                 if y not in y_axis_to_char_images:
@@ -155,22 +163,15 @@ class ImageSymbolClassifier:
                         break
                 if match is not None:
                     break
-            # FIXME: A function maybe here ?
             if match is not None:
-                # and
-                # (match.char_type.external_name == CharType.EXTERNAL_NAME_1 or
-                #  match.char_type.external_name == CharType.EXTERNAL_NAME_i or
-                #  match.char_type.external_name == CharType.EXTERNAL_NAME_j)
                 ij_char_image = dot_char_image.merge_in(match, image)
                 # FIXME: Maybe not the best solution!
                 ij_char_image.char_type = self.cnnModel.predict_raw_image_char_type(ij_char_image.image)
                 ij_char_images.append(ij_char_image)
-                # remove waste char images.
                 disposable_char_images.append(match)
                 disposable_char_images.append(dot_char_image)
         return ij_char_images, disposable_char_images
 
-    # FIXME: This is not needed!
     @staticmethod
     def __external_name_to_char_images(char_images):
         external_name_to_char_images = {}
@@ -251,6 +252,7 @@ class ImageSymbolClassifier:
             PillowImage.fromarray(drawn_image, 'RGB').show(title="Raw Predictions")
 
         return char_images
+
 
 class CharImageUtil:
     @staticmethod

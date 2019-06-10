@@ -5,7 +5,7 @@ sys.path.append('C:\\ComputerScience\\source\\itl-icr')
 
 
 from org.itl.icr.iss.segment import CharacterSegmentation
-from org.itl.icr.isr.ai.dataset.InftyCDB3B import CharTypeRegistry
+from org.itl.icr.isr.ai.dataset.infty_cdb3 import CharTypeRegistry
 from org.itl.icr.isr.recognize import ImageSymbolClassifier
 from org.itl.icr.isr.ai.dataset.paths import Paths
 from org.itl.icr.api.protobuf.util import serialize

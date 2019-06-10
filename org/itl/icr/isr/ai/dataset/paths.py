@@ -22,7 +22,7 @@ class Paths:
         return Paths.resources() + "equation_images\\"
 
     @staticmethod
-    def dataset_inftycdb3():
+    def dataset_infty_cdb3():
         return Paths.resources() + "dataset\\InftyCDB-3\\"
 
     @staticmethod

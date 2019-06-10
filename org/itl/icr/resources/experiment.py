@@ -52,8 +52,8 @@ filePath = Paths.equations() + "clean\\10.jpg"
 # filePath = Paths.equations() + "clean\\5.jpg"
 # filePath = Paths.equations() + "clean\\0.jpg"
 filePath = Paths.equations() + "clean\\12.jpg"
-filePath = Paths.equations() + "clean\\8.jpg" # BAD : letter L
-# # filePath = Paths.character_palette()
+# filePath = Paths.equations() + "clean\\8.jpg" # BAD : letter L
+filePath = Paths.character_palette()
 # # filePath = Paths.equations() + "raw\\handwritten.jpg" # BAD : Equals
 # filePath = Paths.equations() + "clean\\7.jpg"
 # filePath = Paths.equations() + "clean\\13.jpg" # BAD : Greater Thank or Equals
@@ -61,7 +61,7 @@ filePath = Paths.equations() + "clean\\8.jpg" # BAD : letter L
 # filePath = Paths.equations() + "clean\\15.jpg"
 # filePath = Paths.equations() + "clean\\11.jpg"
 
-filePath = Paths.equations() + "clean\\0.jpg"
+# filePath = Paths.equations() + "clean\\0.jpg"
 image = cv.imread(filePath, cv.IMREAD_GRAYSCALE)
 
 characterSegmentation = CharacterSegmentation()

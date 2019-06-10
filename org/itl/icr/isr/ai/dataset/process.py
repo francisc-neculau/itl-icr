@@ -1,41 +1,36 @@
 import cv2 as cv
 import numpy as np
+import random
 
 
 class DataAugmentation:
 
-    def augment(self, codeToCharImages, codeToTranslation):
-        translationToCodes = {}
-        for code in codeToTranslation.keys():
-            translation = codeToTranslation[code];
-            if code not in codeToCharImages.keys():
-                continue
-            if translation not in translationToCodes:
-                translationToCodes[translation] = [code]
-            else:
-                translationToCodes[translation].append(code)
-
-        for codes in translationToCodes.values():
+    def augment(self, code_to_char_images, label_to_codes):
+        # for each family of codes
+        for codes in label_to_codes.values():
+            number_of_char_images = 0;
+            # for each code
             for code in codes:
-                augmentedImage = self.__augmentImages(codeToCharImages[code], int(5000/len(codes)))
-                codeToCharImages[code].extend(augmentedImage)
+                number_of_char_images = number_of_char_images + len(code_to_char_images[code])
+            if number_of_char_images > 5000:
+                extra = number_of_char_images - 5000
+                for code in codes:
+                    random.shuffle(code_to_char_images[code])
+                    for i in range (0, int(extra / len(codes))):
+                        code_to_char_images[code].pop()
+            else:
+                missing = 5000 - number_of_char_images
+                for code in codes:
+                    char_images = self.__augment_images(code_to_char_images[code], int(missing / len(codes)))
+                    code_to_char_images[code].extend(char_images)
+        return code_to_char_images
 
-        return codeToCharImages
-
-    def __augmentImages(self, images, max=5000):
-
-        newImages = []
-        count = max - len(images)
-        if count <= 0:
-            return []
-        else:
-            index = 0;
-            while count > 0:
-                count -= 1
-                newImages.append(np.copy(images[index % len(images)]))
-                index += 1
-
-        return newImages
+    @staticmethod
+    def __augment_images(char_images, number_to_add):
+        new_char_images = []
+        for i in range(0, number_to_add):
+            new_char_images.append(np.copy(char_images[random.randint(0, len(char_images) - 1)]))
+        return new_char_images
 
 
 class DataProcessor:
@@ -43,11 +38,11 @@ class DataProcessor:
     """
 
     @staticmethod
-    def squareResize(charImage):
+    def square_resize(charImage):
         height = charImage.shape[0]
         width = charImage.shape[1]
 
-        newSize = (32, 32)
+        newSize = (40, 40)
 
         if height > width:
             left = int((height - width)/2)

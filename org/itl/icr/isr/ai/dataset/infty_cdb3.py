@@ -65,7 +65,7 @@ class CharTypeRegistry:
     FRACTION_HEIGHT_TO_WIDTH_RATIO_THRESHOLD = 0.05
 
     def __init__(self):
-        self.ocrCodeListPath = Paths.dataset_inftycdb3() + "_custom\\Subset-Of-CDB3B-OcrCodeList.csv"
+        self.ocrCodeListPath = Paths.dataset_infty_cdb3() + "_custom\\Subset-Of-OcrCodeList.csv"
         self.label_to_char_type = {}
         self.code_to_label = {}
         self.external_name_to_char_type = {}
@@ -136,17 +136,16 @@ char_type_registry.load()
 
 class Dataset:
     def __init__(self):
-        self.readPath = Paths.dataset_inftycdb3()
+        self.readPath = Paths.dataset_infty_cdb3()
         self.writePath = Paths.external_resources()
 
-        self.reader = Reader(self.readPath, DataProcessor.squareResize)
+        self.reader = Reader(self.readPath, DataProcessor.square_resize)
         self.writer = Writer(self.writePath)
 
         self.code_to_char_images = None
         self.code_to_label = None
         self.label_to_codes = None
 
-        self.dataAnalytics = DataAnalytics()
         self.dataAugmentation = DataAugmentation()
 
         self.data = None
@@ -166,11 +165,11 @@ class Dataset:
         """
         self.code_to_char_images, self.code_to_label, self.label_to_codes = self.reader.read()
         if display_data_analytics:
-            self.dataAnalytics.analyze(self.code_to_char_images, self.code_to_label)
+            DataAnalytics.analyze(self.code_to_char_images, self.code_to_label)
 
-        self.code_to_char_images = self.dataAugmentation.augment(self.code_to_char_images, self.code_to_label)
+        self.code_to_char_images = self.dataAugmentation.augment(self.code_to_char_images, self.label_to_codes)
         if display_data_analytics:
-            self.dataAnalytics.analyze(self.code_to_char_images, self.code_to_label)
+            DataAnalytics.analyze(self.code_to_char_images, self.code_to_label)
 
         images = []
         labels = []
@@ -194,44 +193,38 @@ class Dataset:
 
 class Reader:
     """
-        This class is used to read the InftyCDB-3-B Database.
-
-        InftyCDB-3-B is an extract of InftyCDB-1, which includes data
-    from 20 of its articles. To reduce the number of samples with
-    the same character code, size, and shape, clustering was applied
-    to the data from these 20 articles, reducing the number of data
-    samples to about 70,000.
-    The data is written in the same format as in InftyCDB-3-A.
-
+        This class is used to read the InftyCDB-3 Database.
     The folder structure should be like this :
-        InftyCDB-3/InftyCDB-3_new (Folder)
-                    |
-                    |____InftyCDB-3-B (Folder)
-                    |   |
-                    |   |____images (Folder)
-                    |   |
-                    |   |____CharInfoDB-3-B_Info.txt | (B)
-                    |
-                    |____OcrCodeList.txt
+        InftyCDB-3(Folder)
+            |
+            |____InftyCDB-3-A (Folder)
+            |   |
+            |   |____images (Folder)
+            |   |
+            |   |____CharInfoDB-3-A_Info.csv | (A)
+            |
+            |____InftyCDB-3-B (Folder)
+            |   |
+            |   |____images (Folder)
+            |   |
+            |   |____CharInfoDB-3-B_Info.csv | (B)
+            |
+            |____OcrCodeList.txt
 
-    (B) is a csv file with the following header
+    (A) and (B) are csv files with the following header
     id, code, sheet, cx, cy, width, height
-
-    FIXME: 0x4130 0x33f5 0x33f0 documenteaza-le !
+    # 0x4130 0x33f5 0x33f0
     """
 
-    def __init__(self, inftyCdb3FolderPath, resizeFunction=lambda x: x):
+    def __init__(self, inftyCdb3FolderPath, resize_function=lambda x: x):
         """
             The parameter inftyCdb3FolderPath is the path to the
         main folder of the Database, InftyCDB-3/InftyCDB-3_new.
         """
-        self.inftyCdb3FolderPath = inftyCdb3FolderPath
-        self.char_code_file_path = inftyCdb3FolderPath + "_custom\\Subset-Of-CDB3B-OcrCodeList.csv"
-        # self.char_code_file_path = inftyCdb3FolderPath + "_custom\\CDB3B-OcrCodeList.txt"
-        self.char_info_file_path = inftyCdb3FolderPath + "\\InftyCDB-3-B\\CharInfoDB-3-B_Info.txt"
-        self.images_folder_path = inftyCdb3FolderPath + "\\InftyCDB-3-B\\images"
+        self.infty_cdb3_folder_path = inftyCdb3FolderPath
+        self.char_code_file_path = inftyCdb3FolderPath + "_custom\\Subset-Of-OcrCodeList.csv"
         self.images_read_limit = 1
-        self.resizeFunction = resizeFunction
+        self.resizeFunction = resize_function
         self.stepSize = 0.05
         self.logger = logging.getLogger(self.__class__.__name__)
 
@@ -242,16 +235,16 @@ class Reader:
         else:
             return current_step
 
-    def __read_sheet_number_to_image(self):
-        self.logger.info("Reading compressed char images: " + self.images_folder_path)
-
+    def __read_sheet_number_to_image(self, images_relative_path):
+        images_relative_path = self.infty_cdb3_folder_path + images_relative_path
+        self.logger.info("Reading compressed char images: " + images_relative_path)
         sheet_number_to_image = {}
-        image_file_names = listdir(self.images_folder_path)
+        image_file_names = listdir(images_relative_path)
         current_step = self.stepSize
         for i in range(0, len(image_file_names)):
             image_file_name = image_file_names[i]
             # imageName is also the sheet number from (B) but without the file extension
-            image_file_path = join(self.images_folder_path, image_file_name)
+            image_file_path = join(images_relative_path, image_file_name)
             if isfile(image_file_path):
                 image = cv.imread(image_file_path, cv.IMREAD_GRAYSCALE)
                 sheet_number = image_file_name[:image_file_name.find('.')]
@@ -262,10 +255,11 @@ class Reader:
             current_step = self.log_progress((i+1), len(image_file_names), current_step)
         return sheet_number_to_image
 
-    def __read_code_to_char_images(self, sheet_number_to_image, codes):
-        self.logger.info("Reading the char metadata file : " + self.char_info_file_path)
-        char_info_file = open(self.char_info_file_path, 'r')
-        char_info_file_size = os.path.getsize(self.char_info_file_path)
+    def __read_code_to_char_images(self, sheet_number_to_image, char_info_file_path, codes):
+        char_info_file_path = self.infty_cdb3_folder_path + char_info_file_path
+        self.logger.info("Reading the char metadata file : " + char_info_file_path)
+        char_info_file = open(char_info_file_path, 'r')
+        char_info_file_size = os.path.getsize(char_info_file_path)
 
         line = char_info_file.readline()  # skip header.
         amount_read = len(line) + 1
@@ -273,6 +267,7 @@ class Reader:
         current_step = self.stepSize
         current_step = self.log_progress(amount_read, char_info_file_size, current_step)
 
+        number_of_char_images = 0
         code_to_char_images = {}
         while True:
             line = char_info_file.readline()
@@ -300,21 +295,21 @@ class Reader:
             # if len(code_to_char_images.get(code)) == self.images_read_limit:
             #     continue
             code_to_char_images.get(code).append(char_image)
-        self.logger.info("Read the following codes : ")
+            number_of_char_images = 1 + number_of_char_images
+        self.logger.info("Number of Char Images : " + str(number_of_char_images))
+        self.logger.info("Number of Char Types : " + str(code_to_char_images.keys()))
         self.logger.info(code_to_char_images.keys())
         return code_to_char_images
 
     def __read_code_to_label(self):
-        # FIXME: This will  be replaced with a call to CharTypeRegistry
         self.logger.info("Reading the char code file : " + self.char_code_file_path)
-
         char_code_csv_file = open(self.char_code_file_path, 'r')
         char_code_csv_file_size = os.path.getsize(self.char_code_file_path)
         char_code_csv_file.readline()  # skip header.
         line = char_code_csv_file.readline()
         amount_read = len(line) + 1
 
-        current_step = self.stepSize;
+        current_step = self.stepSize
         code_to_label = {}
         while line:
             pieces = line.strip().split(',')
@@ -332,20 +327,29 @@ class Reader:
             line = char_code_csv_file.readline()
             amount_read += len(line) + 1
             current_step = self.log_progress(amount_read, char_code_csv_file_size, current_step)
-
         return code_to_label
 
     def read(self):
-        sheet_number_to_image = self.__read_sheet_number_to_image()
+        sheet_a_number_to_image = self.__read_sheet_number_to_image("\\InftyCDB-3-A\\images")
+        sheet_b_number_to_image = self.__read_sheet_number_to_image("\\InftyCDB-3-B\\images")
         code_to_label = self.__read_code_to_label()
-        code_to_char_images = self.__read_code_to_char_images(sheet_number_to_image, code_to_label.keys())
-
+        code_to_a_char_images = self.__read_code_to_char_images(
+            sheet_a_number_to_image, "\\InftyCDB-3-A\\CharInfoDB-3-A_Info.csv", code_to_label.keys()
+        )
+        code_to_b_char_images = self.__read_code_to_char_images(
+            sheet_b_number_to_image, "\\InftyCDB-3-B\\CharInfoDB-3-B_Info.csv", code_to_label.keys()
+        )
+        code_to_char_images = {}
+        for code in code_to_a_char_images.keys():
+            code_to_char_images[code] = code_to_a_char_images[code]
+        for code in code_to_b_char_images.keys():
+            code_to_char_images[code].extend(code_to_b_char_images[code])
         label_to_codes = {}
         for code in code_to_label.keys():
             label = code_to_label[code]
             if label not in label_to_codes:
                 label_to_codes[label] = []
-                label_to_codes[label].append(code)
+            label_to_codes[label].append(code)
 
         return code_to_char_images, code_to_label, label_to_codes
 
@@ -412,5 +416,5 @@ class Writer:
 
 
 # dataset = Dataset()
-# dataset.load()
-# dataset.save()
+# dataset.load(display_data_analytics=True)
+# # dataset.save()

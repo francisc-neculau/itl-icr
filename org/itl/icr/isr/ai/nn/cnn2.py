@@ -2,7 +2,7 @@ from keras import models, layers, optimizers
 from keras.layers import MaxPooling2D, Conv2D, Dropout, Activation, Dense
 from keras.models import model_from_json
 from os import environ
-from org.itl.icr.isr.ai.dataset.InftyCDB3B import Dataset, CharTypeRegistry, CharType, char_type_registry
+from org.itl.icr.isr.ai.dataset.infty_cdb3 import Dataset, CharTypeRegistry, CharType, char_type_registry
 from org.itl.icr.isr.ai.dataset.process import DataProcessor
 from org.itl.icr.isr.ai.dataset.paths import Paths
 import cv2 as cv
@@ -46,9 +46,9 @@ class CnnModel:
         if height / width <= CharTypeRegistry.FRACTION_HEIGHT_TO_WIDTH_RATIO_THRESHOLD:
             char_type = char_type_registry.get_special_char_type(CharType.IDENTIFIER_FRACTION)
         else:
-            image = cv.bitwise_not(DataProcessor.squareResize(binary_image))
+            image = cv.bitwise_not(DataProcessor.square_resize(binary_image))
             x = np.asarray(image)
-            x = x.reshape((1, 32, 32, 1))
+            x = x.reshape((1, 40, 40, 1))
             x = x.astype('float32') / 255
             label = self.encoder.inverse_transform(self.model.predict(x))[0]
             char_type = char_type_registry.find(label)
@@ -105,9 +105,9 @@ class CnnModel:
         train_labels = train_labels[0:start]
 
         # Creating Tensors
-        train_images = train_images.reshape((len(train_images), 32, 32, 1))
+        train_images = train_images.reshape((len(train_images), 40, 40, 1))
         train_images = train_images.astype('float32') / 255  # converting to a [0, 1] scale
-        valid_images = valid_images.reshape((len(valid_images), 32, 32, 1))
+        valid_images = valid_images.reshape((len(valid_images), 40, 40, 1))
         valid_images = valid_images.astype('float32') / 255  # converting to a [0, 1] scale
         # test_images = test_images.reshape((10000, 28, 28, 1))
         # test_images = test_images.astype('float32') / 255  # converting to a [0, 1] scale
@@ -143,7 +143,7 @@ class CnnModel:
         # ----------------
         model = models.Sequential()
 
-        model.add(Conv2D(filters=16, kernel_size=(5, 5), strides=(1, 1), use_bias=True, input_shape=(32, 32, 1)))
+        model.add(Conv2D(filters=16, kernel_size=(5, 5), strides=(1, 1), use_bias=True, input_shape=(40, 40, 1)))
         model.add(Activation('relu'))
 
         model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -151,6 +151,7 @@ class CnnModel:
 
         model.add(Conv2D(filters=24, kernel_size=(3, 3), strides=(1, 1), use_bias=True))
         model.add(Activation('relu'))
+        model.add(Dropout(rate=0.01))
         model.add(Conv2D(filters=36, kernel_size=(3, 3), strides=(1, 1), use_bias=True))
         model.add(Activation('relu'))
 
