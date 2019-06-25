@@ -42,8 +42,8 @@ import cv2 as cv
 # logging.CRITICAL
 logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(levelname)-8s %(message)s')
 logger = logging.getLogger("root")
-logger.setLevel(logging.ERROR)
-# logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 
 # FIXME: Bad Segmentation!
@@ -61,7 +61,8 @@ filePath = Paths.character_palette()
 # filePath = Paths.equations() + "clean\\15.jpg"
 # filePath = Paths.equations() + "clean\\11.jpg"
 
-# filePath = Paths.equations() + "clean\\0.jpg"
+filePath = Paths.equations() + "clean\\17.jpg"
+filePath = Paths.equations() + "clean\\15.jpg"
 image = cv.imread(filePath, cv.IMREAD_GRAYSCALE)
 
 characterSegmentation = CharacterSegmentation()
@@ -76,9 +77,6 @@ PillowImage.fromarray(result).show(title="Unclassified")
 
 imageSymbolClassifier = ImageSymbolClassifier()
 classified_char_images = imageSymbolClassifier.classify(image, char_images)
-
-result = Util.draw_char_images(cv.cvtColor(image, cv.COLOR_GRAY2RGB), classified_char_images)
-PillowImage.fromarray(result).show(title="Result")
 
 cv.imshow('Result', result)
 cv.waitKey(0)

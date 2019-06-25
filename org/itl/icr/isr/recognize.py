@@ -195,6 +195,11 @@ class ImageSymbolClassifier:
 
             char_images.append(char_image)
 
+        if logging.getLogger("root").isEnabledFor(logging.DEBUG):
+            drawn_image = cv.cvtColor(image, cv.COLOR_GRAY2RGB)
+            drawn_image = CharImageUtil.draw_char_images_on_image(drawn_image, char_images)
+            PillowImage.fromarray(drawn_image, 'RGB').show(title="Coarse Predictions")
+
         # Case: Square Root sign
         for char_image in char_images:
             for other_char_image in char_images:
@@ -249,7 +254,7 @@ class ImageSymbolClassifier:
         if logging.getLogger("root").isEnabledFor(logging.DEBUG):
             drawn_image = cv.cvtColor(image, cv.COLOR_GRAY2RGB)
             drawn_image = CharImageUtil.draw_char_images_on_image(drawn_image, char_images)
-            PillowImage.fromarray(drawn_image, 'RGB').show(title="Raw Predictions")
+            PillowImage.fromarray(drawn_image, 'RGB').show(title="Good Predictions")
 
         return char_images
 

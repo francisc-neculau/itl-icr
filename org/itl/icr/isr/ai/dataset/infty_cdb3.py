@@ -415,6 +415,6 @@ class Writer:
             self.logger.info("Written " + str(len(charImages)) + " of " + charCode + " | " + codeTranslation)
 
 
-# dataset = Dataset()
-# dataset.load(display_data_analytics=True)
+dataset = Dataset()
+dataset.load(display_data_analytics=True)
 # # dataset.save()
