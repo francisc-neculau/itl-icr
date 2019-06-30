@@ -62,7 +62,7 @@ filePath = Paths.character_palette()
 # filePath = Paths.equations() + "clean\\11.jpg"
 
 filePath = Paths.equations() + "clean\\17.jpg"
-filePath = Paths.equations() + "clean\\15.jpg"
+filePath = Paths.equations() + "clean\\0.jpg"
 image = cv.imread(filePath, cv.IMREAD_GRAYSCALE)
 
 characterSegmentation = CharacterSegmentation()
@@ -73,7 +73,7 @@ result = Util.draw_char_images(cv.cvtColor(image, cv.COLOR_GRAY2RGB), char_image
 PillowImage.fromarray(result).show(title="Unclassified")
 
 
-# serialize(char_images, Paths.resources() + "result.txt");
+# serialize(char_images, Paths.resources() + "result.bin");
 
 imageSymbolClassifier = ImageSymbolClassifier()
 classified_char_images = imageSymbolClassifier.classify(image, char_images)

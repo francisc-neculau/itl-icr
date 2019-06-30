@@ -413,8 +413,3 @@ class Writer:
                     charImage = charImages[i]
                     cv.imwrite(codeTranslationTrainFolder + "\\" + str(i) + ".jpg", charImage)
             self.logger.info("Written " + str(len(charImages)) + " of " + charCode + " | " + codeTranslation)
-
-
-dataset = Dataset()
-dataset.load(display_data_analytics=True)
-# # dataset.save()
