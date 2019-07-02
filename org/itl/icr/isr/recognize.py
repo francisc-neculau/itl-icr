@@ -146,7 +146,7 @@ class ImageSymbolClassifier:
             x_min = int(mass_x_y[0] - 0.1 * mass_x_y[0])
             x_max = int(mass_x_y[0] + 0.1 * mass_x_y[0])
             y_min = bottom_right_point[1] + 1
-            y_max = y_min + dot_char_image.height * 3
+            y_max = y_min + dot_char_image.height * 4
 
             # We need only to find the first withing
             # the above boundaries if such a char_image exists

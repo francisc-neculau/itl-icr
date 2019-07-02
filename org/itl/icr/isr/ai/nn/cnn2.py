@@ -3,7 +3,7 @@ from keras.layers import MaxPooling2D, Conv2D, Dropout, Activation, Dense
 from keras.models import model_from_json
 from os import environ
 from org.itl.icr.isr.ai.dataset.infty_cdb3 import Dataset, CharTypeRegistry, CharType, char_type_registry
-from org.itl.icr.isr.ai.dataset.process import DataProcessor
+from org.itl.icr.isr.ai.dataset.process import DataProcessor, DataAugmentation
 from org.itl.icr.isr.ai.dataset.paths import Paths
 import cv2 as cv
 import numpy as np
@@ -48,7 +48,7 @@ class CnnModel:
         else:
             image = cv.bitwise_not(DataProcessor.square_resize(binary_image))
             x = np.asarray(image)
-            x = x.reshape((1, 40, 40, 1))
+            x = x.reshape((1, DataAugmentation.width, DataAugmentation.height, 1))
             x = x.astype('float32') / 255
             label = self.encoder.inverse_transform(self.model.predict(x))[0]
             char_type = char_type_registry.find(label)

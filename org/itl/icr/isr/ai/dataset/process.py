@@ -5,6 +5,9 @@ import random
 
 class DataAugmentation:
 
+    width = 40;
+    height = 40;
+
     def augment(self, code_to_char_images, label_to_codes):
         # for each family of codes
         for codes in label_to_codes.values():
@@ -42,20 +45,20 @@ class DataProcessor:
         height = charImage.shape[0]
         width = charImage.shape[1]
 
-        newSize = (40, 40)
+        new_size = (DataAugmentation.width, DataAugmentation.height)
 
         if height > width:
             left = int((height - width)/2)
             right = height - width - left
             result = cv.copyMakeBorder(charImage, 0, 0, left, right, cv.BORDER_CONSTANT, None, value=255)
-            result = cv.resize(result, newSize)
+            result = cv.resize(result, new_size)
         elif height < width:
             top = int((width - height) / 2)
             bottom = width - height - top
             result = cv.copyMakeBorder(charImage, top, bottom, 0, 0, cv.BORDER_CONSTANT, None, value=255)
-            result = cv.resize(result, newSize)
+            result = cv.resize(result, new_size)
         else:
-            result = cv.resize(charImage, newSize)
+            result = cv.resize(charImage, new_size)
         return result
 
     @staticmethod
